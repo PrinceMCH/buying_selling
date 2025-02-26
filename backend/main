@@ -1,6 +1,19 @@
-#!/bin/usr/env python 
-import sys
+#!/usr/bin/python 
 
-print (sys.argv) 
-print(lens(sys.argv))
-print ('Hello, World!')
+from fastapi import FastAPI
+from routes import users, products, orders
+from database import engine, Base
+
+app = FastAPI(title="Buy & Sell API", version="1.0")
+
+# Create database tables
+Base.metadata.create_all(bind=engine)
+
+# Include Routes
+app.include_router(users.router, prefix="/users", tags=["Users"])
+app.include_router(products.router, prefix="/products", tags=["Products"])
+app.include_router(orders.router, prefix="/orders", tags=["Orders"])
+
+@app.get("/")
+def home():
+    return {"message": "Welcome to Buy & Sell API!"}
