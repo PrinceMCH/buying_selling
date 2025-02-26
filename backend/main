@@ -1,2 +1,6 @@
 #!/bin/usr/env python 
+import sys
+
+print (sys.argv) 
+print(lens(sys.argv))
 print ('Hello, World!')
