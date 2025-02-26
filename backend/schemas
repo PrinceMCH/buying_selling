@@ -1,0 +1,53 @@
+#!/usr/bin/python
+
+from pydantic import BaseModel, EmailStr
+from typing import Optional
+
+# User Schemas
+class UserBase(BaseModel):
+    username: str
+    email: EmailStr
+
+class UserCreate(UserBase):
+    password: str
+
+class UserResponse(UserBase):
+    id: int
+    class Config:
+        orm_mode = True
+
+# Product Schemas
+class ProductBase(BaseModel):
+    name: str
+    description: Optional[str] = None
+    price: float
+    in_stock: bool = True
+
+class ProductCreate(ProductBase):
+    pass
+
+class ProductResponse(ProductBase):
+    id: int
+    class Config:
+        orm_mode = True
+
+# Order Schemas
+class OrderBase(BaseModel):
+    product_id: int
+    quantity: int
+
+class OrderCreate(OrderBase):
+    user_id: int
+
+class OrderResponse(OrderBase):
+    id: int
+    total_price: float
+    class Config:
+        orm_mode = True
+
+# Payment Schema
+class PaymentRequest(BaseModel):
+    amount: int  # amount in cents
+    currency: str = "usd"
+    description: str
+    receipt_email: EmailStr
