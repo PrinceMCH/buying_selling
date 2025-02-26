@@ -1,0 +1,30 @@
+#!/usr/bin/python
+
+import stripe
+from fastapi import APIRouter, Request, HTTPException
+
+router = APIRouter()
+
+# Set your Stripe secret key and webhook secret
+stripe.api_key = "sk_test_your_secret_key_here"  
+WEBHOOK_SECRET = "whsec_your_webhook_secret_here"  
+
+@router.post("/webhook")
+async def stripe_webhook(request: Request):
+    payload = await request.body()
+    sig_header = request.headers.get("stripe-signature")
+
+    try:
+        event = stripe.Webhook.construct_event(payload, sig_header, WEBHOOK_SECRET)
+    except (ValueError, stripe.error.SignatureVerificationError):
+        raise HTTPException(status_code=400, detail="Webhook verification failed")
+
+    # Handle specific events
+    if event["type"] == "payment_intent.succeeded":
+        payment_intent = event["data"]["object"]
+        print(f"✅ Payment succeeded for: {payment_intent['amount']} cents")
+
+    elif event["type"] == "payment_intent.payment_failed":
+        print("❌ Payment failed!")
+
+    return {"status": "success"}
