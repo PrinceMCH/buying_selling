@@ -1,6 +1,7 @@
 import stripe
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
+from schemas import PaymentRequest
 
 router = APIRouter()
 
